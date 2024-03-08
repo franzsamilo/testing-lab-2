@@ -36,46 +36,109 @@ function AddPogs() {
   }
 
   return (
-    <div>
-      <div className="flex flex-col">
-        <input
-          type="text"
-          value={PogsName}
-          onChange={(e) => setPogsName(e.target.value)}
-          className="border-2 border-black mx-40 mt-8"
-          placeholder="ex. Pure Storage"
-        />
-        <input
-          type="text"
-          value={TickerSymbol}
-          onChange={(e) => setTickerSymbol(e.target.value)}
-          className="border-2 border-black mx-40 mt-8"
-          placeholder="ex. PSTG"
-        />
-        <input
-          type="number"
-          value={Price}
-          onChange={(e) => setPrice(Number(e.target.value))}
-          className="border-2 border-black mx-40 mt-8"
-          placeholder="Price"
-        />
-        <input
-          type="text"
-          value={Color}
-          onChange={(e) => setColor(e.target.value)}
-          className="border-2 border-black mx-40 mt-8"
-          placeholder="ex. #000000"
-        />
-        <input
-          type="number"
-          value={0}
-          onChange={(e) => setUserId(Number(e.target.value))}
-          className="border-2 border-black mx-40 mt-8"
-          placeholder="default 0"
-        />
-
-        <button onClick={addPogsQuery}>Add Pogs</button>
-      </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h1 className="text-4xl font-bold mb-8">Add Pogs</h1>
+      <form className="w-full max-w-lg">
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <label
+              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="pogsName"
+            >
+              Pogs Name
+            </label>
+            <input
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+              id="pogsName"
+              type="text"
+              value={PogsName}
+              onChange={(e) => setPogsName(e.target.value)}
+              placeholder="ex. Pure Storage"
+            />
+          </div>
+          <div className="w-full md:w-1/2 px-3">
+            <label
+              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="tickerSymbol"
+            >
+              Ticker Symbol
+            </label>
+            <input
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
+              id="tickerSymbol"
+              type="text"
+              value={TickerSymbol}
+              onChange={(e) => setTickerSymbol(e.target.value)}
+              placeholder="ex. PSTG"
+            />
+          </div>
+        </div>
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <div className="w-full px-3">
+            <label
+              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="price"
+            >
+              Price
+            </label>
+            <input
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+              id="price"
+              type="number"
+              value={Price}
+              onChange={(e) => setPrice(Number(e.target.value))}
+              placeholder="Price"
+            />
+          </div>
+        </div>
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <div className="w-full px-3">
+            <label
+              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="color"
+            >
+              Color
+            </label>
+            <input
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+              id="color"
+              type="text"
+              value={Color}
+              onChange={(e) => setColor(e.target.value)}
+              placeholder="ex. #000000"
+            />
+          </div>
+        </div>
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <div className="w-full px-3">
+            <label
+              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="userId"
+            >
+              User ID
+            </label>
+            <input
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+              id="userId"
+              type="number"
+              value={UserId}
+              onChange={(e) => setUserId(Number(e.target.value))}
+              placeholder="default 0"
+            />
+          </div>
+        </div>
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <div className="w-full px-3">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="button"
+              onClick={addPogsQuery}
+            >
+              Add Pogs
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }
