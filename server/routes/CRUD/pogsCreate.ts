@@ -7,6 +7,14 @@ router.post("/create", async (req: Request, res: Response) => {
   try {
     const { pogs_name, ticker_symbol, price, color, user_id } = req.body;
 
+    if (!pogs_name || !ticker_symbol || !price || !color || !user_id) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    if (typeof price !== "number") {
+      return res.status(401).json({ error: "Invalid data types" });
+    }
+
     await poggies.query(
       "INSERT INTO pogs (pogs_name, ticker_symbol, price, color, user_id) VALUES ($1, $2, $3, $4, $5)",
       [pogs_name, ticker_symbol, price, color, 0]

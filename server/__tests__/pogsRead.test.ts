@@ -23,4 +23,11 @@ describe("(GET /api/pogs/read) testing Read method of CRUD where", () => {
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body)).toBeTruthy();
   });
+
+  it("should return an empty array when no pogs exist", async () => {
+    const res = await request(app).get("/api/pogs/read");
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual([]);
+  });
 });

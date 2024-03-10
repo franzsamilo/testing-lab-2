@@ -31,4 +31,30 @@ describe("(POST /api/pogs/create) - testing Create method of CRUD where", () => 
     expect(res.statusCode).toEqual(201);
     expect(res.body).toHaveProperty("message", "Pogs created successfully");
   });
+
+  it("should return 400 for missing required fields", async () => {
+    const newPog = {
+      pogs_name: "Test Pog",
+    };
+
+    const res = await request(app).post("/api/pogs/create").send(newPog);
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("error", "Missing required fields");
+  });
+
+  it("should return 400 for invalid data types", async () => {
+    const newPog = {
+      pogs_name: "Test Pog",
+      ticker_symbol: "TPOG",
+      price: "invalid",
+      color: "#FFFFFF",
+      user_id: 1,
+    };
+
+    const res = await request(app).post("/api/pogs/create").send(newPog);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("error", "Invalid data types");
+  });
 });
