@@ -11,6 +11,7 @@ interface Pog {
 
 function ReadPogs() {
   const [pogs, setPogs] = useState<Pog[]>([]);
+  const [editingPog, setEditingPog] = useState<Pog | null>(null);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -29,6 +30,44 @@ function ReadPogs() {
       });
   }, []);
 
+  const handleEdit = (pog: Pog) => {
+    setEditingPog(pog);
+  };
+
+  const handleSave = async (updatedPog: Pog) => {
+    try {
+      const response = await fetch(
+        `http://localhost:6969/api/pogs/update/${updatedPog.pogs_id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedPog),
+        }
+      );
+
+      if (!response.ok) {
+        console.error(`Failed to update pog. Status: ${response.status}`);
+        const errorData = await response.json();
+        console.error("Error Data:", errorData);
+        throw new Error("Failed to update pog");
+      }
+
+      const updatedPogFromServer = await response.json();
+      console.log("Updated Pog from server:", updatedPogFromServer);
+
+      setPogs((oldPogs) =>
+        oldPogs.map((pog) =>
+          pog.pogs_id === updatedPog.pogs_id ? updatedPogFromServer : pog
+        )
+      );
+      setEditingPog(null);
+    } catch (error) {
+      console.error("Error updating pog:", error);
+    }
+  };
+
   const handleDelete = async (id: number) => {
     try {
       const response = await fetch(
@@ -42,8 +81,7 @@ function ReadPogs() {
         throw new Error("Failed to delete pog");
       }
 
-      // If the deletion is successful, remove the item from the state
-      setPogs((oldPogs) => oldPogs.filter((pog) => pog.user_id !== id));
+      setPogs((oldPogs) => oldPogs.filter((pog) => pog.pogs_id !== id));
     } catch (error) {
       console.error("Error deleting pog:", error);
     }
@@ -66,25 +104,66 @@ function ReadPogs() {
         <tbody>
           {pogs.map((pog, index) => (
             <tr
-              key={index}
+              key={pog.pogs_id}
               onMouseEnter={() => setHoveredRow(index)}
               onMouseLeave={() => setHoveredRow(null)}
               className={hoveredRow === index ? "hover:bg-gray-200" : ""}
             >
-              <td className="border px-4 py-2">{pog.pogs_name}</td>
-              <td className="border px-4 py-2">{pog.ticker_symbol}</td>
-              <td className="border px-4 py-2">{pog.price}</td>
-              <td className="border px-4 py-2">{pog.color}</td>
-              <td className="border px-4 py-2">{pog.user_id}</td>
-              {hoveredRow === index && (
-                <td className="border px-4 py-2">
-                  <button
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleDelete(pog.pogs_id)}
-                  >
-                    Delete
-                  </button>
-                </td>
+              {editingPog && editingPog.pogs_id === pog.pogs_id ? (
+                <>
+                  <td className="border px-4 py-2">
+                    <input type="text" defaultValue={pog.pogs_name} />
+                  </td>
+                  <td className="border px-4 py-2">
+                    <input type="text" defaultValue={pog.ticker_symbol} />
+                  </td>
+                  <td className="border px-4 py-2">
+                    <input type="number" defaultValue={pog.price} />
+                  </td>
+                  <td className="border px-4 py-2">
+                    <input type="text" defaultValue={pog.color} />
+                  </td>
+                  <td className="border px-4 py-2">
+                    <input type="number" defaultValue={pog.user_id} />
+                  </td>
+                  <td className="border px-4 py-2">
+                    <button
+                      className="bg-green-700 rounded px-4"
+                      onClick={() => handleSave({ ...pog, pogs_name: "" })}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="bg-red-700 rounded px-2"
+                      onClick={() => setEditingPog(null)}
+                    >
+                      Cancel
+                    </button>
+                  </td>
+                </>
+              ) : (
+                <>
+                  <td className="border px-4 py-2">{pog.pogs_name}</td>
+                  <td className="border px-4 py-2">{pog.ticker_symbol}</td>
+                  <td className="border px-4 py-2">{pog.price}</td>
+                  <td className="border px-4 py-2">{pog.color}</td>
+                  <td className="border px-4 py-2">{pog.user_id}</td>
+                  <td className="border px-4 py-2">
+                    <button
+                      className="bg-green-700 rounded px-4"
+                      onClick={() => handleEdit(pog)}
+                    >
+                      Edit
+                    </button>
+                    <div></div>
+                    <button
+                      className="bg-red-700 rounded px-2"
+                      onClick={() => handleDelete(pog.pogs_id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </>
               )}
             </tr>
           ))}
