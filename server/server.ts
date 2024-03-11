@@ -3,8 +3,8 @@ import cors from "cors";
 // ROUTES IMPORTS
 import pogsCreate from "./routes/CRUD/pogsCreate";
 import pogsRead from "./routes/CRUD/pogsRead";
-import pogsDelete from "./routes/CRUD/pogsDelete"
-import pogsUpdate from './routes/CRUD/pogsUpdate'
+import pogsDelete from "./routes/CRUD/pogsDelete";
+import pogsUpdate from "./routes/CRUD/pogsUpdate";
 
 const app = express();
 const port = 6969;

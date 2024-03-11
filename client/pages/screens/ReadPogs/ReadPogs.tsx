@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 
 interface Pog {
+  pogs_id: number;
   pogs_name: string;
   ticker_symbol: string;
   price: number;
   color: string;
   user_id: number;
-  pogs_id: number;
 }
 
 function ReadPogs() {
   const [pogs, setPogs] = useState<Pog[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPog, setEditingPog] = useState<Pog | null>(null);
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("http://localhost:6969/api/pogs/read")
@@ -30,62 +30,51 @@ function ReadPogs() {
       });
   }, []);
 
-  const handleEdit = (pog: Pog) => {
-    setEditingPog(pog);
-  };
-
-  const handleSave = async (updatedPog: Pog) => {
+  async function handleDelete(pogId: number) {
+    console.log("handleDelete called for Pog ID:", pogId);
     try {
       const response = await fetch(
-        `http://localhost:6969/api/pogs/update/${updatedPog.pogs_id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedPog),
-        }
-      );
-
-      if (!response.ok) {
-        console.error(`Failed to update pog. Status: ${response.status}`);
-        const errorData = await response.json();
-        console.error("Error Data:", errorData);
-        throw new Error("Failed to update pog");
-      }
-
-      const updatedPogFromServer = await response.json();
-      console.log("Updated Pog from server:", updatedPogFromServer);
-
-      setPogs((oldPogs) =>
-        oldPogs.map((pog) =>
-          pog.pogs_id === updatedPog.pogs_id ? updatedPogFromServer : pog
-        )
-      );
-      setEditingPog(null);
-    } catch (error) {
-      console.error("Error updating pog:", error);
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      const response = await fetch(
-        `http://localhost:6969/api/pogs/delete/${id}`,
+        `http://localhost:6969/api/pogs/delete/${pogId}`,
         {
           method: "DELETE",
         }
       );
-
       if (!response.ok) {
-        throw new Error("Failed to delete pog");
+        throw new Error("Failed to delete Pog");
       }
-
-      setPogs((oldPogs) => oldPogs.filter((pog) => pog.pogs_id !== id));
+      setPogs(pogs.filter((pog) => pog.pogs_id !== pogId));
     } catch (error) {
-      console.error("Error deleting pog:", error);
+      console.error("Error deleting Pog:", error);
     }
-  };
+  }
+
+  async function handleUpdate() {
+    if (editingPog) {
+      try {
+        const response = await fetch(
+          `http://localhost:6969/api/pogs/update/${editingPog.pogs_id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(editingPog),
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to update Pog");
+        }
+        setPogs(
+          pogs.map((pog) =>
+            pog.pogs_id === editingPog.pogs_id ? editingPog : pog
+          )
+        );
+        setIsModalOpen(false);
+      } catch (error) {
+        console.error("Error updating Pog:", error);
+      }
+    }
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -93,6 +82,7 @@ function ReadPogs() {
       <table className="table-auto">
         <thead>
           <tr>
+            <th className="px-4 py-2">ID</th>
             <th className="px-4 py-2">Pogs Name</th>
             <th className="px-4 py-2">Ticker Symbol</th>
             <th className="px-4 py-2">Price</th>
@@ -102,73 +92,172 @@ function ReadPogs() {
           </tr>
         </thead>
         <tbody>
-          {pogs.map((pog, index) => (
-            <tr
-              key={pog.pogs_id}
-              onMouseEnter={() => setHoveredRow(index)}
-              onMouseLeave={() => setHoveredRow(null)}
-              className={hoveredRow === index ? "hover:bg-gray-200" : ""}
-            >
-              {editingPog && editingPog.pogs_id === pog.pogs_id ? (
-                <>
-                  <td className="border px-4 py-2">
-                    <input type="text" defaultValue={pog.pogs_name} />
-                  </td>
-                  <td className="border px-4 py-2">
-                    <input type="text" defaultValue={pog.ticker_symbol} />
-                  </td>
-                  <td className="border px-4 py-2">
-                    <input type="number" defaultValue={pog.price} />
-                  </td>
-                  <td className="border px-4 py-2">
-                    <input type="text" defaultValue={pog.color} />
-                  </td>
-                  <td className="border px-4 py-2">
-                    <input type="number" defaultValue={pog.user_id} />
-                  </td>
-                  <td className="border px-4 py-2">
-                    <button
-                      className="bg-green-700 rounded px-4"
-                      onClick={() => handleSave({ ...pog, pogs_name: "" })}
-                    >
-                      Save
-                    </button>
-                    <button
-                      className="bg-red-700 rounded px-2"
-                      onClick={() => setEditingPog(null)}
-                    >
-                      Cancel
-                    </button>
-                  </td>
-                </>
-              ) : (
-                <>
-                  <td className="border px-4 py-2">{pog.pogs_name}</td>
-                  <td className="border px-4 py-2">{pog.ticker_symbol}</td>
-                  <td className="border px-4 py-2">{pog.price}</td>
-                  <td className="border px-4 py-2">{pog.color}</td>
-                  <td className="border px-4 py-2">{pog.user_id}</td>
-                  <td className="border px-4 py-2">
-                    <button
-                      className="bg-green-700 rounded px-4"
-                      onClick={() => handleEdit(pog)}
-                    >
-                      Edit
-                    </button>
-                    <div></div>
-                    <button
-                      className="bg-red-700 rounded px-2"
-                      onClick={() => handleDelete(pog.pogs_id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </>
-              )}
+          {pogs.map((pog) => (
+            <tr key={pog.pogs_id}>
+              <td className="border px-4 py-2">{pog.pogs_id}</td>
+              <td className="border px-4 py-2">{pog.pogs_name}</td>
+              <td className="border px-4 py-2">{pog.ticker_symbol}</td>
+              <td className="border px-4 py-2">{pog.price}</td>
+              <td className="border px-4 py-2">{pog.color}</td>
+              <td className="border px-4 py-2">{pog.user_id}</td>
+              <td className="border px-4 py-2">
+                <button
+                  onClick={() => {
+                    setEditingPog(pog);
+                    setIsModalOpen(true);
+                  }}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(pog.pogs_id)}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+      {isModalOpen && (
+        <div className="fixed z-10 inset-0 overflow-y-auto">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div
+              className="fixed inset-0 transition-opacity"
+              aria-hidden="true"
+            >
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <h3 className="text-lg leading-6 font-medium text-gray-900">
+                  Edit Pog
+                </h3>
+                <div className="mt-5">
+                  <form onSubmit={handleUpdate}>
+                    <div className="shadow sm:rounded-md sm:overflow-hidden">
+                      <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
+                        <div className="grid grid-cols-3 gap-6">
+                          <div className="col-span-3 sm:col-span-2">
+                            <label
+                              htmlFor="edit-pogs_name"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              Pogs Name
+                            </label>
+                            <input
+                              type="text"
+                              name="pogs_name"
+                              id="edit-pogs_name"
+                              value={editingPog?.pogs_name}
+                              onChange={(e) => {
+                                if (editingPog) {
+                                  setEditingPog({
+                                    ...editingPog,
+                                    pogs_name: e.target.value,
+                                  });
+                                }
+                              }}
+                              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                          <div className="col-span-3 sm:col-span-2">
+                            <label
+                              htmlFor="edit-ticker_symbol"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              Ticker Symbol
+                            </label>
+                            <input
+                              type="text"
+                              name="pogs_name"
+                              id="edit-ticker_symbol"
+                              value={editingPog?.ticker_symbol}
+                              onChange={(e) => {
+                                if (editingPog) {
+                                  setEditingPog({
+                                    ...editingPog,
+                                    ticker_symbol: e.target.value,
+                                  });
+                                }
+                              }}
+                              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                          <div className="col-span-3 sm:col-span-2">
+                            <label
+                              htmlFor="edit-price"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              Price
+                            </label>
+                            <input
+                              type="number"
+                              name="price"
+                              id="edit-price"
+                              value={editingPog?.price || 0}
+                              onChange={(e) => {
+                                if (editingPog) {
+                                  const price = parseFloat(e.target.value);
+                                  setEditingPog({
+                                    ...editingPog,
+                                    price: isNaN(price) ? 0 : price,
+                                  });
+                                }
+                              }}
+                              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                          <div className="col-span-3 sm:col-span-2">
+                            <label
+                              htmlFor="edit-color"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              Color
+                            </label>
+                            <input
+                              type="text"
+                              name="color"
+                              id="edit-color"
+                              value={editingPog?.color}
+                              onChange={(e) => {
+                                if (editingPog) {
+                                  setEditingPog({
+                                    ...editingPog,
+                                    color: e.target.value,
+                                  });
+                                }
+                              }}
+                              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                      <button
+                        type="submit"
+                        className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+                      >
+                        Update
+                      </button>
+                      <button
+                        onClick={() => setIsModalOpen(false)}
+                        type="button"
+                        className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
