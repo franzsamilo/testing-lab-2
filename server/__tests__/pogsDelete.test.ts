@@ -29,7 +29,7 @@ describe("(DELETE /api/pogs/delete/:id) - testing Delete method of CRUD where", 
   });
 
   it("should delete a Pog", async () => {
-    const pog_id = 49; // pog_id that exists in the database
+    const pog_id = 50; // pog_id that exists in the database
 
     const res = await request(app).delete(`/api/pogs/delete/${pog_id}`);
 

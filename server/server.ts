@@ -22,6 +22,8 @@ app.use("/api/pogs", pogsRead);
 app.use("/api/pogs", pogsDelete);
 app.use("/api/pogs", pogsUpdate);
 
-app.listen(port, () => {
-  console.log(`Server listening on ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server listening on ${port}`);
+// });
+
+export default app;

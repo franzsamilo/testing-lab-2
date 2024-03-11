@@ -24,6 +24,7 @@ describe("(GET /api/pogs/read) testing Read method of CRUD where", () => {
     expect(Array.isArray(res.body)).toBeTruthy();
   });
 
+  // would almost always fail because the database is rarely empty
   it("should return an empty array when no pogs exist", async () => {
     const res = await request(app).get("/api/pogs/read");
 
