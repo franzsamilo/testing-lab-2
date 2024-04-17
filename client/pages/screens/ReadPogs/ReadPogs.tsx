@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 interface Pog {
   pogs_id: number;
@@ -6,30 +7,32 @@ interface Pog {
   ticker_symbol: string;
   price: number;
   color: string;
-  user_id: number;
+  user_id: string;
 }
 
 function ReadPogs() {
   const [pogs, setPogs] = useState<Pog[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPog, setEditingPog] = useState<Pog | null>(null);
+  const { user } = useUser();
 
   useEffect(() => {
-    fetch("http://localhost:6969/api/pogs/read")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch pogs");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setPogs(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching pogs:", error);
-      });
-  }, []);
-
+    if (user) {
+      fetch(`http://localhost:6969/api/pogs/read/${user.sub}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch pogs");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setPogs(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching pogs:", error);
+        });
+    }
+  }, [user]);
   async function handleDelete(pogId: number) {
     console.log("handleDelete called for Pog ID:", pogId);
     try {
@@ -78,7 +81,7 @@ function ReadPogs() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold mb-8">Read Pogs</h1>
+      <h1 className="text-4xl font-bold mb-8">My Pogs</h1>
       <table className="table-auto">
         <thead>
           <tr>
@@ -87,7 +90,7 @@ function ReadPogs() {
             <th className="px-4 py-2">Ticker Symbol</th>
             <th className="px-4 py-2">Price</th>
             <th className="px-4 py-2">Color</th>
-            <th className="px-4 py-2">User ID</th>
+
             <th className="px-4 py-2">Actions</th>
           </tr>
         </thead>
@@ -99,7 +102,7 @@ function ReadPogs() {
               <td className="border px-4 py-2">{pog.ticker_symbol}</td>
               <td className="border px-4 py-2">{pog.price}</td>
               <td className="border px-4 py-2">{pog.color}</td>
-              <td className="border px-4 py-2">{pog.user_id}</td>
+
               <td className="border px-4 py-2">
                 <button
                   onClick={() => {

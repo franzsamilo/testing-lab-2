@@ -7,7 +7,7 @@ router.delete("/delete/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await poggies.query(
-      "DELETE FROM pogs WHERE pogs_id = $1 RETURNING *",
+      "DELETE FROM pogs_main WHERE pogs_id = $1 RETURNING *",
       [id]
     );
     if (result.rowCount === 0) {

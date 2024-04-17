@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 function AddPogs() {
+  const { user } = useUser();
   const [PogsName, setPogsName] = useState("");
   const [TickerSymbol, setTickerSymbol] = useState("");
   const [Price, setPrice] = useState(0);
   const [Color, setColor] = useState("");
-  const [UserId, setUserId] = useState(0);
 
   function addPogsQuery() {
     fetch("http://localhost:6969/api/pogs/create", {
@@ -18,7 +19,7 @@ function AddPogs() {
         ticker_symbol: TickerSymbol,
         price: Price,
         color: Color,
-        user_id: UserId,
+        user_id: user?.sub,
       }),
     })
       .then((response) => {
@@ -106,24 +107,6 @@ function AddPogs() {
               value={Color}
               onChange={(e) => setColor(e.target.value)}
               placeholder="ex. #000000"
-            />
-          </div>
-        </div>
-        <div className="flex flex-wrap -mx-3 mb-6">
-          <div className="w-full px-3">
-            <label
-              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-              htmlFor="userId"
-            >
-              User ID
-            </label>
-            <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-              id="userId"
-              type="number"
-              value={UserId}
-              onChange={(e) => setUserId(Number(e.target.value))}
-              placeholder="default 0"
             />
           </div>
         </div>

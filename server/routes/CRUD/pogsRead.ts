@@ -3,9 +3,14 @@ import poggies from "../../db/poggies";
 
 const router = express.Router();
 
-router.get("/read", async (req: Request, res: Response) => {
+router.get("/read/:user_id", async (req: Request, res: Response) => {
   try {
-    const pogs = await poggies.query("SELECT * FROM pogs");
+    const user_id = req.params.user_id;
+
+    const query = "SELECT * FROM pogs_main WHERE user_id = $1";
+    const params = [user_id];
+
+    const pogs = await poggies.query(query, params);
     res.status(200).json(pogs.rows);
   } catch (error) {
     console.error("Error fetching pogs:", error);

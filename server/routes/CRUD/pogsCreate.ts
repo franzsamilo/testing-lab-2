@@ -16,8 +16,8 @@ router.post("/create", async (req: Request, res: Response) => {
     }
 
     await poggies.query(
-      "INSERT INTO pogs (pogs_name, ticker_symbol, price, color, user_id) VALUES ($1, $2, $3, $4, $5)",
-      [pogs_name, ticker_symbol, price, color, 0]
+      "INSERT INTO pogs_main (pogs_name, ticker_symbol, price, color, user_id) VALUES ($1, $2, $3, $4, $5)",
+      [pogs_name, ticker_symbol, price, color, user_id]
     );
 
     res.status(201).json({ message: "Pogs created successfully" });
