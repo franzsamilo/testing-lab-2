@@ -3,6 +3,7 @@
 import React from "react";
 import { useRouter } from "next/router";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import Marquee from "react-fast-marquee";
 
 function index() {
   const router = useRouter();
@@ -27,10 +28,41 @@ function index() {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
+  const cartoonishNames = [
+    "Bloopie",
+    "Froggy",
+    "Puffy",
+    "Snuggles",
+    "Zippy",
+    "Giggles",
+    "Sparkles",
+    "Bouncy",
+    "Twinkle",
+    "Giggles",
+    "Sparkles",
+    "Bouncy",
+    "Twinkle",
+    "Giggles",
+    "Sparkles",
+    "Bouncy",
+    "Twinkle",
+  ];
+
   if (user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <div className="flex flex-wrap justify-center items-center">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+        <Marquee
+          speed={60}
+          gradient={false}
+          className="text-2xl font-bold text-blue-500 mb-auto"
+        >
+          {cartoonishNames.map((name, index) => (
+            <span key={index} className="mr-4">
+              {name}
+            </span>
+          ))}
+        </Marquee>
+        <div className="flex flex-wrap justify-center items-center mb-auto">
           <aside className="w-full p-32 bg-white rounded-lg shadow-md mr-4">
             <h2 className="text-2xl font-bold mb-4">Your Profile</h2>
             <p className="text-lg">
@@ -57,7 +89,7 @@ function index() {
         </div>
         <button
           onClick={auth0LogOut}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-md mt-4"
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-md"
         >
           Logout
         </button>

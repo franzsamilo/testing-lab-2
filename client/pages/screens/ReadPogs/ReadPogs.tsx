@@ -90,7 +90,6 @@ function ReadPogs() {
             <th className="px-4 py-2">Ticker Symbol</th>
             <th className="px-4 py-2">Price</th>
             <th className="px-4 py-2">Color</th>
-
             <th className="px-4 py-2">Actions</th>
           </tr>
         </thead>
@@ -102,7 +101,6 @@ function ReadPogs() {
               <td className="border px-4 py-2">{pog.ticker_symbol}</td>
               <td className="border px-4 py-2">{pog.price}</td>
               <td className="border px-4 py-2">{pog.color}</td>
-
               <td className="border px-4 py-2">
                 <button
                   onClick={() => {
