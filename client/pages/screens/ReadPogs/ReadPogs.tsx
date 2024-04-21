@@ -33,6 +33,7 @@ function ReadPogs() {
         });
     }
   }, [user]);
+
   async function handleDelete(pogId: number) {
     console.log("handleDelete called for Pog ID:", pogId);
     try {
