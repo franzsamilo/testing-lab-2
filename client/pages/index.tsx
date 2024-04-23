@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react";
 import Pog from "./screens/Components&Constants/Pog";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import CarouselSlider from "./screens/Components&Constants/Carousel";
-import MarqueeCompenent from "./screens/HomeComponents/Marquee";
-import PogsDisplay from "./screens/HomeComponents/PogsDisplay";
-import UserSidebar from "./screens/HomeComponents/UserSidebar";
-import LoginPage from "./screens/HomeComponents/LoginPage";
+import MarqueeCompenent from "./screens/IndexComponents/Marquee";
+import PogsDisplay from "./screens/IndexComponents/PogsDisplay";
+import UserSidebar from "./screens/IndexComponents/UserSidebar";
+import LoginPage from "./screens/IndexComponents/LoginPage";
 
 function index() {
   const { user, error, isLoading } = useUser();
