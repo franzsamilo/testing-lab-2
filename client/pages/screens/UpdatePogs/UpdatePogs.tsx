@@ -1,38 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { useUser } from "@auth0/nextjs-auth0/client";
+import Pog from "../../screens/Components&Constants/Pog";
 
-interface Pog {
-  pogs_id: number;
-  pogs_name: string;
-  ticker_symbol: string;
-  price: number;
-  color: string;
-  user_id: string;
-}
-
-function ReadPogs() {
+function UpdatePogs() {
   const [pogs, setPogs] = useState<Pog[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPog, setEditingPog] = useState<Pog | null>(null);
-  const { user } = useUser();
 
   useEffect(() => {
-    if (user) {
-      fetch(`http://localhost:6969/api/pogs/read/${user.sub}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to fetch pogs");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setPogs(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching pogs:", error);
-        });
-    }
-  }, [user]);
+    fetch("http://localhost:6969/api/pogs/read")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch pogs");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setPogs(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching pogs:", error);
+      });
+  }, []);
 
   async function handleDelete(pogId: number) {
     console.log("handleDelete called for Pog ID:", pogId);
@@ -80,9 +68,22 @@ function ReadPogs() {
     }
   }
 
+  function generatePriceChange(pogs_id: number) {
+    fetch(`http://localhost:6969/api/pogs/generate-price-change/${pogs_id}`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Price change generated and recorded:", data.price_change);
+      })
+      .catch((error) => {
+        console.error("Error generating and recording price change:", error);
+      });
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold mb-8">My Pogs</h1>
+      <h1 className="text-4xl font-bold mb-8">Pogs on Market</h1>
       <table className="table-auto">
         <thead>
           <tr>
@@ -91,6 +92,7 @@ function ReadPogs() {
             <th className="px-4 py-2">Ticker Symbol</th>
             <th className="px-4 py-2">Price</th>
             <th className="px-4 py-2">Color</th>
+            <th className="px-4 py-2">Price Change</th>
             <th className="px-4 py-2">Actions</th>
           </tr>
         </thead>
@@ -102,6 +104,14 @@ function ReadPogs() {
               <td className="border px-4 py-2">{pog.ticker_symbol}</td>
               <td className="border px-4 py-2">{pog.price}</td>
               <td className="border px-4 py-2">{pog.color}</td>
+              <td
+                className="border px-4 py-2"
+                style={{ color: pog.price_change < 0 ? "red" : "green" }}
+              >
+                {pog.price_change !== null
+                  ? `${pog.price_change.toFixed(2)}%`
+                  : "Not defined"}
+              </td>
               <td className="border px-4 py-2">
                 <button
                   onClick={() => {
@@ -117,6 +127,12 @@ function ReadPogs() {
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2"
                 >
                   Delete
+                </button>
+                <button
+                  onClick={() => generatePriceChange(pog.pogs_id)}
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2"
+                >
+                  Generate Price Change
                 </button>
               </td>
             </tr>
@@ -264,4 +280,4 @@ function ReadPogs() {
   );
 }
 
-export default ReadPogs;
+export default UpdatePogs;
