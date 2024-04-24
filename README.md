@@ -10,4 +10,10 @@ How to run:
 
 NOTE:
 
-UNCOMMENT LINE 25-27 IN SERVER.TS IF YOU WANT TO START VIEW THE APP AND NOT TESTING.
+UNCOMMENT THIS EXACT LINE in server.ts BEFORE RUNNING NPM TEST
+"app.listen(port, () => {
+onsole.log(`Server listening on ${port}`);
+});
+"
+
+ADD USER EMAIL to admins.tsx FOR ADMIN ACCESS.
