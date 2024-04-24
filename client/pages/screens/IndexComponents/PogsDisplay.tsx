@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Pog from "../Components&Constants/Pog";
 import { useUser } from "@auth0/nextjs-auth0/client";
 
@@ -8,10 +8,17 @@ interface PogsDisplayInterface {
 
 function PogsDisplay(PogsDisplayProps: PogsDisplayInterface) {
   const { allPogs } = PogsDisplayProps;
-  const [BuyStock, setBuyStock] = React.useState("");
+  const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
   const { user } = useUser();
 
-  async function handleBuy(pogs_id: number, stock: number) {
+  function handleQuantityChange(pogs_id: number, quantity: number) {
+    setQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [pogs_id]: quantity,
+    }));
+  }
+
+  async function handleBuy(pogs_id: number, quantity: number) {
     try {
       const response = await fetch("http://localhost:6969/api/pogs/buy", {
         method: "POST",
@@ -21,7 +28,7 @@ function PogsDisplay(PogsDisplayProps: PogsDisplayInterface) {
         body: JSON.stringify({
           user_id: user?.sub,
           pogs_id: pogs_id,
-          stock: stock,
+          stock: quantity,
         }),
       });
 
@@ -44,7 +51,6 @@ function PogsDisplay(PogsDisplayProps: PogsDisplayInterface) {
       {allPogs.map((pog: Pog) => {
         const priceDiff = pog.price * (pog.price_change / 100);
         const displayPrice = priceDiff + pog.price;
-
         const borderColor =
           displayPrice > pog.price ? "border-green-600" : "border-red-600";
         const textColor =
@@ -68,10 +74,21 @@ function PogsDisplay(PogsDisplayProps: PogsDisplayInterface) {
                 {displayPrice > pog.price ? " ↑" : " ↓"}
               </p>
             </div>
-            <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <input
+                type="number"
+                min="1"
+                value={quantities[pog.pogs_id] || 1}
+                onChange={(e) =>
+                  handleQuantityChange(pog.pogs_id, parseInt(e.target.value))
+                }
+                className="border-2 border-gray-300 bg-white h-10 w-12 rounded-lg text-sm focus:outline-none mb-3 ml-3 text-center"
+              />
               <button
-                onClick={() => handleBuy(pog.pogs_id, 1)}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md"
+                onClick={() =>
+                  handleBuy(pog.pogs_id, quantities[pog.pogs_id] || 1)
+                }
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md mb-3 mr-3  "
               >
                 Buy
               </button>
