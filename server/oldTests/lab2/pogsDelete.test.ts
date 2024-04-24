@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "../server";
+import app from "../../server";
 import { Server } from "http";
 import portfinder from "portfinder";
 

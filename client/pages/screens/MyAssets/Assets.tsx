@@ -4,7 +4,56 @@ import Pog from "../Components&Constants/Pog";
 
 function Assets() {
   const [ownedPogs, setOwnedPogs] = useState([]);
+  const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
   const { user } = useUser();
+
+  function handleQuantityChange(pogs_id: number, quantity: number) {
+    setQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [pogs_id]: quantity,
+    }));
+  }
+
+  async function handleSell(pogs_id: number, stock: number) {
+    try {
+      const response = await fetch("http://localhost:6969/api/pogs/sell", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user?.sub,
+          pogs_id: pogs_id,
+          stock: stock,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Server error:", errorData);
+        throw new Error("Failed to sell pogs");
+      }
+
+      const data = await response.json();
+      alert(data.message);
+      fetch(`http://localhost:6969/api/assets/read/${user?.sub}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch pogs");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setOwnedPogs(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching pogs:", error);
+        });
+    } catch (error) {
+      console.error(error);
+      alert("Failed to sell pogs");
+    }
+  }
 
   useEffect(() => {
     fetch(`http://localhost:6969/api/assets/read/${user?.sub}`)
@@ -21,8 +70,6 @@ function Assets() {
         console.error("Error fetching pogs:", error);
       });
   }, [user]);
-
-  async function handleSell(pogs_id: number, stock: number) {}
 
   return (
     <div>
@@ -60,12 +107,25 @@ function Assets() {
                   Total Value: ₱ {((pog.stock || 1) * displayPrice).toFixed(2)}
                 </p>
               </div>
-              <button
-                onClick={() => handleSell(pog.pogs_id, 1)}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md ml-[96px] my-2"
-              >
-                Sell
-              </button>
+              <div className="flex items-center justify-between">
+                <input
+                  type="number"
+                  min="1"
+                  value={quantities[pog.pogs_id] || 1}
+                  onChange={(e) =>
+                    handleQuantityChange(pog.pogs_id, parseInt(e.target.value))
+                  }
+                  className="border-2 border-gray-300 bg-white h-10 w-16 rounded-lg text-sm focus:outline-none mb-3 ml-3 text-center"
+                />
+                <button
+                  onClick={() =>
+                    handleSell(pog.pogs_id, quantities[pog.pogs_id] || 1)
+                  }
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md mb-3 mr-3  "
+                >
+                  Sell
+                </button>
+              </div>
             </div>
           );
         })}

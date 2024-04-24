@@ -11,6 +11,7 @@ import walletRead from "./routes/CRUD/E-wallet/walletRead";
 import pogsGeneratePriceChange from "./routes/CRUD/PogsBuy&Sell/pogsGeneratePriceChange";
 import assetsRead from "./routes/CRUD/UserAssets/assetsRead";
 import pogsBuy from "./routes/CRUD/PogsBuy&Sell/pogsBuy";
+import pogsSell from "./routes/CRUD/PogsBuy&Sell/pogsSell";
 
 const app = express();
 const port = 6969;
@@ -33,6 +34,7 @@ app.use("/api/wallet", walletRead);
 app.use("/api/pogs", pogsGeneratePriceChange);
 app.use("/api/assets", assetsRead);
 app.use("/api/pogs", pogsBuy);
+app.use("/api/pogs", pogsSell);
 
 app.listen(port, () => {
   console.log(`Server listening on ${port}`);

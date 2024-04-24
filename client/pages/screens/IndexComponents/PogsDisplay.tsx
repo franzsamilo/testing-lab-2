@@ -82,7 +82,7 @@ function PogsDisplay(PogsDisplayProps: PogsDisplayInterface) {
                 onChange={(e) =>
                   handleQuantityChange(pog.pogs_id, parseInt(e.target.value))
                 }
-                className="border-2 border-gray-300 bg-white h-10 w-12 rounded-lg text-sm focus:outline-none mb-3 ml-3 text-center"
+                className="border-2 border-gray-300 bg-white h-10 w-16 rounded-lg text-sm focus:outline-none mb-3 ml-3 text-center"
               />
               <button
                 onClick={() =>
