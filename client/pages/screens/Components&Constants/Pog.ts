@@ -6,4 +6,5 @@ export default interface Pog {
   color: string;
   user_id: string;
   price_change: number;
+  stock?: number;
 }

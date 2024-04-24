@@ -30,8 +30,6 @@ function index() {
     return shuffledPogs.slice(0, limit);
   }
 
-  function handleBuy(pogs_id: number) {}
-
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
@@ -40,7 +38,7 @@ function index() {
       <div className="flex flex-col items-center min-h-screen bg-white mb-[420px]">
         <MarqueeCompenent randomPogs={randomPogs} />
         <CarouselSlider />
-        <PogsDisplay allPogs={allPogs} handleBuy={handleBuy} />
+        <PogsDisplay allPogs={allPogs} />
         <UserSidebar />
       </div>
     );

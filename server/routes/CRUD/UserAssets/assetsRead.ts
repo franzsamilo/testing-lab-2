@@ -3,34 +3,23 @@ import poggies from "../../../db/poggies";
 
 const router = express.Router();
 
-router.get("/assets", async (req: Request, res: Response) => {
+router.get("/read/:user_id", async (req: Request, res: Response) => {
   try {
-    const userId = req.query.userId || req.body.userId;
+    const user_id = req.params.user_id;
 
-    if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
-    }
+    const query = `
+      SELECT owned_assets.stock, pogs_main.pogs_id, pogs_main.pogs_name, pogs_main.price, pogs_main.price_change
+      FROM owned_assets
+      JOIN pogs_main ON owned_assets.pogs_id = pogs_main.pogs_id
+      WHERE owned_assets.user_id = $1
+    `;
+    const params = [user_id];
+    const result = await poggies.query(query, params);
 
-    const result = await poggies.query(
-      `
-            SELECT op.pogs_id, op.stock, op.total_value, pm.price
-            FROM owned_pogs op
-            JOIN pogs_main pm ON op.pogs_id = pm.pogs_id
-            WHERE op.user_id = $1
-        `,
-      [userId]
-    );
-
-    const assets = result.rows.map((row: any) => ({
-      pogs_id: row.pogs_id,
-      stock: row.stock,
-      total_value: row.stock * row.price,
-    }));
-
-    res.status(200).json(assets);
+    res.status(200).json(result.rows);
   } catch (error) {
-    console.error("Error fetching assets:", error);
-    res.status(500).json({ error: "Failed to fetch assets" });
+    console.error("Error fetching pogs:", error);
+    res.status(500).json({ error: "Failed to fetch pogs" });
   }
 });
 

@@ -77,8 +77,8 @@ function Ewallet() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="text-4xl font-bold mb-8">E-Wallet</h1>
-      <div className="my-8 text-xl font-semibold">
-        Current Balance: {balance}
+      <div className="my-8 text-xl font-semibold text-green-800">
+        Current Balance: ₱ {balance}
       </div>
 
       <div className="flex flex-wrap -mx-3 mb-6">
