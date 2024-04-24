@@ -10,6 +10,13 @@ router.post(
       const pogs_id = req.params.pogs_id;
       const price_change = Math.random() * 10 - 5;
 
+      if (
+        !pogs_id ||
+        (price_change !== undefined && typeof price_change !== "number")
+      ) {
+        return res.status(400).json({ error: "Invalid inputs" });
+      }
+
       await poggies.query(
         "UPDATE pogs_main SET price_change = $1 WHERE pogs_id = $2",
         [price_change, pogs_id]

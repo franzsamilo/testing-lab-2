@@ -36,8 +36,8 @@ app.use("/api/assets", assetsRead);
 app.use("/api/pogs", pogsBuy);
 app.use("/api/pogs", pogsSell);
 
-app.listen(port, () => {
-  console.log(`Server listening on ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server listening on ${port}`);
+// });
 
 export default app;
