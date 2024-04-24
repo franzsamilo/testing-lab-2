@@ -10,10 +10,10 @@ router.post(
       const pogs_id = req.params.pogs_id;
       const price_change = Math.random() * 10 - 5;
 
-      if (
-        !pogs_id ||
-        (price_change !== undefined && typeof price_change !== "number")
-      ) {
+      const checkQuery = "SELECT 1 FROM pogs_main WHERE pogs_id = $1";
+      const checkResult = await poggies.query(checkQuery, [pogs_id]);
+
+      if (checkResult.rows.length === 0) {
         return res.status(400).json({ error: "Invalid inputs" });
       }
 
