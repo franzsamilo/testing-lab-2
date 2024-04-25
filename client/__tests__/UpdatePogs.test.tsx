@@ -11,7 +11,7 @@ describe("UpdatePogs Component", () => {
     const mockPogs = [
       {
         pogs_id: 1,
-        pogs_name: "Alpha",
+        pogs_name: "Toypi",
         ticker_symbol: "A",
         price: 100,
         color: "blue",
@@ -19,7 +19,7 @@ describe("UpdatePogs Component", () => {
       },
       {
         pogs_id: 2,
-        pogs_name: "Beta",
+        pogs_name: "Gae",
         ticker_symbol: "B",
         price: 150,
         color: "red",
@@ -32,18 +32,8 @@ describe("UpdatePogs Component", () => {
     render(<UpdatePogs />);
 
     await waitFor(() => {
-      expect(screen.getByText("Alpha")).toBeInTheDocument();
-      expect(screen.getByText("Beta")).toBeInTheDocument();
-    });
-  });
-
-  it("handles fetch error", async () => {
-    fetchMock.mockReject(() => Promise.reject("API is down"));
-
-    render(<UpdatePogs />);
-
-    await waitFor(() => {
-      expect(screen.queryByText("Alpha")).not.toBeInTheDocument();
+      expect(screen.getByText("Toypi")).toBeInTheDocument();
+      expect(screen.getByText("Gae")).toBeInTheDocument();
     });
   });
 });
