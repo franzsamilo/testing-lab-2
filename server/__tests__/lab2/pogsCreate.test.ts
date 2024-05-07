@@ -24,6 +24,7 @@ describe("(POST /api/pogs/create) - testing Create method of CRUD where", () => 
       price: 100,
       color: "#FFFFFF",
       user_id: 1,
+      pogs_id: 50,
     };
 
     const res = await request(app).post("/api/pogs/create").send(newPog);
